@@ -1,2 +1,2 @@
 # Intelligent-Chatbot-Floara
-An intelligent chatbot made using keras
+An intelligent multi-lingual chatbot made using keras
