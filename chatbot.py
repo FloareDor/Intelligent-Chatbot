@@ -4,7 +4,11 @@ import pickle
 import numpy as np
 import nltk
 from nltk.stem import WordNetLemmatizer
-
+import tensorflow
+import discord
+from discord.ext import commands
+physical_devices = tensorflow.config.list_physical_devices('GPU') 
+tensorflow.config.experimental.set_memory_growth(physical_devices[0], True)
 from tensorflow.keras.models import load_model
 
 lemmatizer = WordNetLemmatizer()
@@ -14,7 +18,7 @@ words = pickle.load(open('words.pkl', 'rb'))
 classes =pickle.load(open('classes.pkl', 'rb'))
 
 model = load_model('chatbotmodel.h5')
-
+print(words)
 def clean_up_sentence(sentence):
     sentence_words = nltk.word_tokenize(sentence)
     sentence_words = [lemmatizer.lemmatize(word) for word in sentence_words]
@@ -43,19 +47,29 @@ def predict_class(sentence):
 def get_response(intents_list, intents_json):
     result = "hi"
     tag = intents_list[0]['intent']
+    #print(tag)
     list_of_intents = intents_json['intents']
     for i in list_of_intents:
         if i['tag'] == tag:
             result = random.choice(i['responses'])
-            break
-        return result
+            return result
 print("Floara is running : )")
+client = commands.Bot(command_prefix = "^")
 
-while True:
-    message = input("")
+@client.event
+async def on_ready(ctx):
+    print("Bot is ready af")
+    await ctx.send("type `help me` for commands :)")
+@client.command()
+async def f(ctx,*,arg):
+    message = str(arg)
     ints = predict_class(message)
     res = get_response(ints, intents)
-    print(res)
+    await ctx.send(res)
+client.run("ToKeN")
+
+    
+
 
 
 
